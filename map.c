@@ -204,7 +204,7 @@ t_map createMapFromFile(char *filename)
 
     t_map map;
     int xdim, ydim;     // dimensions of the map
-    char buffer[100];   // buffer for reading the file line by line
+    // char buffer[100];   // buffer for reading the file line by line
 
     FILE *file = fopen(filename,"rt");
     if (file == NULL)
@@ -264,33 +264,33 @@ void displayMap(t_map map)
         {
             for (int j = 0; j < map.x_max; j++)
             {
-                char c[4];
+                char c[7];
                 switch (map.soils[i][j])
                 {
                     case BASE_STATION:
                         if (rep==1)
                         {
-                            strcpy(c, " B ");
+                            strcpy(c, "  B   ");
                         }
                         else
                         {
-                            strcpy(c, "   ");
+                            strcpy(c, "      ");
                         }
                         break;
                     case PLAIN:
-                        strcpy(c, "---");
+                        strcpy(c, "- - - ");
                         break;
                     case ERG:
-                        strcpy(c, "~~~");
+                        strcpy(c, "~ ~ ~ ");
                         break;
                     case REG:
-                        strcpy(c, "^^^");
+                        strcpy(c, "^ ^ ^ ");
                         break;
                     case CREVASSE:
-                        sprintf(c, "%c%c%c",219,219,219);
+                        sprintf(c, "%c %c %c ",219,219,219);
                         break;
                     default:
-                        strcpy(c, "???");
+                        strcpy(c, "? ? ? ");
                         break;
                 }
                 printf("%s", c);
