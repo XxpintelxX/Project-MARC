@@ -301,3 +301,27 @@ void displayMap(t_map map)
     }
     return;
 }
+
+void displayMapCosts(t_map map)
+{
+    for (int i = 0; i < map.y_max; i++)
+    {
+        for (int j = 0; j < map.x_max; j++)
+        {
+            printf("%-5d ", map.costs[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void displayMapSoils(t_map map)
+{
+    for (int i = 0; i < map.y_max; i++)
+    {
+        for (int j = 0; j < map.x_max; j++)
+        {
+            printf("%d ", map.soils[i][j]);
+        }
+        printf("\n");
+    }
+}

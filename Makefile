@@ -17,6 +17,7 @@ $(NAME): $(OBJS)
 clean:
 		rm -f $(NAME)
 		rm -rf $(OBJS)
+		rm -rf a.out
 
 re: clean all
 

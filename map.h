@@ -55,4 +55,8 @@ t_map createMapFromFile(char *);
  */
 void displayMap(t_map);
 
+void displayMapCosts(t_map map);
+
+void displayMapSoils(t_map map);
+
 #endif //UNTITLED1_MAP_H

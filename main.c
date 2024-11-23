@@ -5,27 +5,35 @@
 
 int main() {
     t_map map = createMapFromFile("maps/example1.map");
-    printf("Map created with dimensions %d x %d\n", map.y_max, map.x_max);
-    for (int i = 0; i < map.y_max; i++)
-    {
-        for (int j = 0; j < map.x_max; j++)
-        {
-            printf("%d ", map.soils[i][j]);
-        }
-        printf("\n");
-    }
-    displayMap(map);
-    // printf the costs, aligned left 5 digits
-    for (int i = 0; i < map.y_max; i++)
-    {
-        for (int j = 0; j < map.x_max; j++)
-        {
-            printf("%-5d ", map.costs[i][j]);
-        }
-        printf("\n");
-    }
+    // printf("Map created with dimensions %d x %d\n", map.y_max, map.x_max);
 
+    // displayMapSoils(map);
+
+    // displayMap(map);
+
+    // printf the costs, aligned left 5 digits
+
+    displayMapCosts(map);
+
+    // t_nary_tree tree = createExTree();
+    // displayTree(tree);
+
+    t_nary_tree tree = createEmptyTree();
     t_position pos;
+    pos.x = 4;
+    pos.y = 0;
+    t_orientation ori = SOUTH;
+    t_localisation loc;
+    loc.ori = ori;
+    loc.pos = pos;
+    printf("\n");
+    printf("pos.x : %d | pos.y : %d\n", pos.x, pos.y);
+    printf("\n");
+    insertNodes(&tree, loc, map);
+    displayTree(tree);
+
+
+    /*t_position pos;
     pos.x = 2;
     pos.y = 2;
     printf("Cost : %d\n", map.costs[pos.x][pos.y]);
@@ -83,7 +91,7 @@ int main() {
             }
             printf("Next cost : %d\n", nextCaseCost(pos, ori, move, map));
         }
-    }
+    }*/
 
     return 0;
 }
