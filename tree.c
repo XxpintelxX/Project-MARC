@@ -94,39 +94,45 @@ int checkNode(t_node* node)
     return 0;
 }
 
-void insertSons(t_node* node, t_localisation loc, t_map map)
+void insertSons(t_node* node, t_localisation loc, t_map map, t_move move)
 {
     const t_move moves[] = { F_10, F_20, F_30, B_10, T_LEFT, T_RIGHT, U_TURN };
     for (int i = 0; i < 7 - node->depth; i++)
     {
-        t_node* new_node = createNode(
-                                        nextCaseCost(loc, moves[i], map), 
-                                        7 - node->depth, 
-                                        node->depth+1
-                                        );
-        if (new_node == NULL)
+        if (moves[i] != move)
         {
-            printf("new node is null\n");fflush(stdout);
-            return;
+            t_node* new_node = createNode(
+                                            nextCaseCost(
+                                                            newPosition(map, loc, move),
+                                                            moves[i],
+                                                            map
+                                                        ), 
+                                            7 - node->depth, 
+                                            node->depth+1
+                                          );
+            if (new_node == NULL)
+            {
+                printf("new node is null\n");fflush(stdout);
+                return;
+            }
+            node->sons[i] = new_node;
         }
-        node->sons[i] = new_node;
     }
 }
 
 void insertNodes(t_nary_tree* tree, t_localisation loc, t_map map)
 {
-    (void)map;
-    (void)loc;
+    const t_move moves[] = { F_10, F_20, F_30, B_10, T_LEFT, T_RIGHT, U_TURN };
     tree->root = createNode(
                             whatCost(map, loc.pos),
                             7, 
                             0
                             );
     t_node* node = tree->root;
-    insertSons(tree->root, loc, map);
+    insertSons(tree->root, loc, map, -1);
     for (int i = 0; i < 7; i++)
     {
-        insertSons(node->sons[i], loc, map);
+        insertSons(node->sons[i], loc, map, moves[i]);
     }
 }
 
@@ -262,4 +268,74 @@ int nextCaseCost(t_localisation loc, t_move move, t_map map)
 int whatCost(t_map map, t_position pos)
 {
     return map.costs[pos.y][pos.x];
+}
+
+// Function to get the new position after applying a move
+t_localisation newPosition(t_map map, t_localisation loc, t_move move)
+{
+    t_localisation new_loc = loc; // Initialize new_loc with current location
+
+    // Handle movement
+    switch (move) {
+        case F_10:
+        case F_20:
+        case F_30: {
+            int distance = (move == F_10) ? 10 : (move == F_20) ? 20 : 30;
+            // Update position based on orientation
+            switch (loc.ori) {
+                case WEST: new_loc.pos.y -= distance; break;
+                case SOUTH:  new_loc.pos.x += distance; break;
+                case EAST: new_loc.pos.y += distance; break;
+                case NORTH:  new_loc.pos.x -= distance; break;
+            }
+            break;
+        }
+        case B_10: {
+            int distance = 10;
+            // Update position based on orientation (opposite direction)
+            switch (loc.ori) {
+                case WEST: new_loc.pos.y += distance; break;
+                case SOUTH:  new_loc.pos.x -= distance; break;
+                case EAST: new_loc.pos.y -= distance; break;
+                case NORTH:  new_loc.pos.x += distance; break;
+            }
+            break;
+        }
+        // case T_LEFT: {
+        //     // Turn left (+90 degrees)
+        //     new_loc.ori = (loc.ori == NORTH) ? WEST : (t_orientation)(loc.ori - 1);
+        //     break;
+        // }
+        // case T_RIGHT: {
+        //     // Turn right (-90 degrees)
+        //     new_loc.ori = (loc.ori == WEST) ? NORTH : (t_orientation)(loc.ori + 1);
+        //     break;
+        // }
+        // case U_TURN: {
+        //     // U-turn (180 degrees)
+        //     new_loc.ori = (loc.ori + 2) % 4;
+        //     break;
+        // }
+        default:
+            // Invalid move, return the current location
+            return loc;
+    }
+
+    // Boundary check
+    if (new_loc.pos.x < 0 || new_loc.pos.x >= map.x_max ||
+        new_loc.pos.y < 0 || new_loc.pos.y >= map.y_max) {
+        printf("Warning: Move would place robot out of bounds. Ignoring.\n");
+        return loc; // Return original position if out of bounds
+    }
+
+    // Update the cost of the move based on soil
+    t_soil current_soil = map.soils[new_loc.pos.y][new_loc.pos.x];
+    int move_cost = map.costs[new_loc.pos.y][new_loc.pos.x];
+
+    if (_soil_cost[current_soil] == 10000) {
+        printf("Warning: Move would place robot on impassable terrain. Ignoring.\n");
+        return loc; // Return original position if terrain is impassable
+    }
+
+    return new_loc;
 }
